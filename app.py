@@ -12,9 +12,8 @@ class YoutubeDownloader:
 
     def fetch_video_info(self):
         ydl_opts = {
-            'cookiefile': './cookies.txt',  # Asegúrate de tener las cookies de YouTube exportadas
             'format': 'best',
-            'quiet': True,  # Cambia a True para silenciar la salida
+            'quiet': True,
         }
         try:
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
@@ -27,7 +26,6 @@ class YoutubeDownloader:
 
     def download(self, progress_callback):
         ydl_opts = {
-            'cookiefile': './cookies.txt',  # Utiliza las cookies para autenticación
             'format': 'best',
             'progress_hooks': [progress_callback],
             'quiet': True,
@@ -46,11 +44,12 @@ def on_progress(d):
         if total_bytes > 0:
             progress = downloaded_bytes / total_bytes
             st.session_state.progress = progress
+            st.progress(progress)
 
 if __name__ == "__main__":
     st.title("Descargador de Videos de Youtube 📸")
     url = st.text_input("Ingrese la URL del video: ")
-    output_path = './downloads'  # Ruta de salida predeterminada
+    output_path = './downloads'
 
     if not os.path.exists(output_path):
         os.makedirs(output_path)
@@ -75,6 +74,7 @@ if __name__ == "__main__":
             st.write("Descargando video, por favor espera...")
             downloader.download(on_progress)
             st.success("¡Descarga completada! 😃")
+            st.session_state.progress = 0.0  # Reset progress after download
             st.session_state.is_downloading = False
 
     st.progress(st.session_state.progress)
